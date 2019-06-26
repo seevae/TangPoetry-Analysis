@@ -28,11 +28,14 @@ public class Crawler {
     /*
         放置文档页面(超链接)
         放置详情页面(数据)
+
+        未被采集和解析的页面
      */
     private final Queue<Page> docQueue = new LinkedBlockingQueue<>();
 
     /*
         放置详情页面
+        处理完成,数据已经在dataSet中
      */
     private final Queue<Page> detailQueue = new LinkedBlockingQueue<>();
 
@@ -96,6 +99,7 @@ public class Crawler {
     }
 
     private void parse(){
+
         while(true){
             try {
                 Thread.sleep(1000);
@@ -109,29 +113,37 @@ public class Crawler {
                 continue;
             }
 
-            try {
-                //采集(爬取)
-                HtmlPage htmlPage =  this.webClient.getPage(page.getUrl());
-                page.setHtmlPage(htmlPage);
+            this.executorService.submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        //匿名内部类,通过类名来访问对象和方法
+                        //采集(爬取)
+                        HtmlPage htmlPage =  Crawler.this.webClient.getPage(page.getUrl());
+                        page.setHtmlPage(htmlPage);
 
-                for(Parse parse:this.parseList){
-                    parse.parse(page);
-                }
+                        for(Parse parse:Crawler.this.parseList){
+                            parse.parse(page);
+                        }
 
 
-                if(page.isDetail()){
-                    this.detailQueue.add(page);
-                }else {
-                    Iterator<Page> iterator = page.getSubPage().iterator();
-                    while(iterator.hasNext()){
-                        Page subPage = iterator.next();
-                        this.docQueue.add(subPage);
-                        iterator.remove();
+                        if(page.isDetail()){
+                            Crawler.this.detailQueue.add(page);
+                        }else {
+                            Iterator<Page> iterator = page.getSubPage().iterator();
+                            while(iterator.hasNext()){
+                                Page subPage = iterator.next();
+                                Crawler.this.docQueue.add(subPage);
+                                iterator.remove();
+                            }
+                        }
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            });
+
         }
     }
 
@@ -149,9 +161,15 @@ public class Crawler {
                 continue;
             }
 
-            for(Pipeline pipeline: this.pipelineList){
-                pipeline.pipeline(page);
-            }
+            this.executorService.submit(new Runnable() {
+                @Override
+                public void run() {
+                    for(Pipeline pipeline: Crawler.this.pipelineList){
+                        pipeline.pipeline(page);
+                    }
+                }
+            });
+
         }
     }
 
@@ -178,20 +196,4 @@ public class Crawler {
         }
     }
 
-
-    public static void main(String[] args) throws IOException {
-
-        final Page page = new Page("https://so.gushiwen.org","/gushi/tangshi.aspx",false);
-
-        Crawler crawler = new Crawler();
-        crawler.addParse(new DocumentParse());
-        crawler.addParse(new DataPageParse());
-
-        crawler.addPipeline(new ConsolePipeline());
-
-        crawler.addPage(page);
-
-        crawler.start();
-
-    }
 }

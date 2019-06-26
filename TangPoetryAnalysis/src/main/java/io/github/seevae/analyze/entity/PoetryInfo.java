@@ -1,4 +1,4 @@
-package io.github.seevae.crawler.common;/*
+package io.github.seevae.analyze.entity;/*
     name zhang;
     */
 

@@ -5,7 +5,7 @@ package io.github.seevae.crawler.prase;
 
 import com.gargoylesoftware.htmlunit.html.*;
 import io.github.seevae.crawler.common.Page;
-import io.github.seevae.crawler.common.PoetryInfo;
+
 
 /**
  * 详情页解析
@@ -53,12 +53,15 @@ public class DataPageParse implements Parse{
         HtmlDivision contentDom = (HtmlDivision) body.getByXPath(contentPath).get(0);
         String content = contentDom.asText();
 
-        PoetryInfo poetryInfo = new PoetryInfo();
-        poetryInfo.setDynasty(dynasty);
-        poetryInfo.setAuthor(author);
-        poetryInfo.setTitle(title);
-        poetryInfo.setContent(content);
 
-        page.getDataSet().putData("poetry",poetryInfo);
+        page.getDataSet().putData("title",title);
+        page.getDataSet().putData("dynasty",dynasty);
+        page.getDataSet().putData("author",author);
+        page.getDataSet().putData("content",content);
+        //以后可以添加更多的数据
+        page.getDataSet().putData("url",page.getUrl());
+
+
+
     }
 }

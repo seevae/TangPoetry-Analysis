@@ -11,6 +11,6 @@ public interface Parse {
      *
      * @param page
      */
-    void parse(Page page);
+    void parse(final Page page);
 
 }

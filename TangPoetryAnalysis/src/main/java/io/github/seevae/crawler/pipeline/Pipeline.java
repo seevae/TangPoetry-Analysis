@@ -6,5 +6,5 @@ import io.github.seevae.crawler.common.Page;
 
 public interface Pipeline {
 
-    void pipeline(Page page);
+    void pipeline(final Page page);
 }

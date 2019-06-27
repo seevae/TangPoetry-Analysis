@@ -18,7 +18,7 @@ public class DatabasePipeline implements Pipeline {
     }
 
     @Override
-    public void pipeline(Page page) {
+    public void pipeline(final Page page) {
 
         String dynasty = (String)page.getDataSet().getData("dynasty");
         String author = (String)page.getDataSet().getData("author");

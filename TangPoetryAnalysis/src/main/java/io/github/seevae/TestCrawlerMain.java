@@ -1,40 +1,31 @@
 package io.github.seevae;
 
-import com.alibaba.druid.pool.DruidDataSource;
-import io.github.seevae.analyze.dao.AnalyzeDao;
-import io.github.seevae.analyze.dao.impl.AnalyzeDaoImpl;
-import io.github.seevae.analyze.service.AnalyzeService;
-import io.github.seevae.analyze.service.impl.AnalyzeServiceImpl;
-import io.github.seevae.config.ConfigProperties;
 import io.github.seevae.config.ObjectFactory;
 import io.github.seevae.crawler.Crawler;
-import io.github.seevae.crawler.common.Page;
-import io.github.seevae.crawler.pipeline.DatabasePipeline;
-import io.github.seevae.crawler.prase.DataPageParse;
-import io.github.seevae.crawler.prase.DocumentParse;
 import io.github.seevae.web.WebController;
-import spark.Request;
-import spark.Response;
-import spark.Route;
+import org.omg.PortableInterceptor.LOCATION_FORWARD;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
-
-import java.time.LocalDateTime;
-
-import static spark.Spark.get;
-import static spark.route.HttpMethod.get;
 
 public class TestCrawlerMain {
 
-    public static void main(String[] args) {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestCrawlerMain.class);
 
-//        Crawler crawler = ObjectFactory .getInstance().getObject(Crawler.class);
-//        crawler.start();
+    public static void main(String[] args) {
 
         WebController webController = ObjectFactory.getInstance().getObject(WebController.class);
 
         //运行web服务,提供接口
+        LOGGER.info("Web Server launch ...");
         webController.launch();
+
+        if(args.length == 1&& args[0].equals("run-crawler")){
+            //启动爬虫
+            Crawler crawler = ObjectFactory .getInstance().getObject(Crawler.class);
+            LOGGER.info("crawler start ...");
+            crawler.start();
+        }
 
     }
 }

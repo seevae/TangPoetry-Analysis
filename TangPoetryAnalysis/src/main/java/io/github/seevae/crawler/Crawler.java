@@ -11,6 +11,8 @@ import io.github.seevae.crawler.pipeline.Pipeline;
 import io.github.seevae.crawler.prase.DataPageParse;
 import io.github.seevae.crawler.prase.DocumentParse;
 import io.github.seevae.crawler.prase.Parse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -24,6 +26,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Crawler {
+
+    private final Logger logger = LoggerFactory.getLogger(Crawler.class);
 
     /*
         放置文档页面(超链接)
@@ -104,7 +108,7 @@ public class Crawler {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("Parse occur exception {}.",e.getMessage());
             }
 
             final Page page = this.docQueue.poll();
@@ -139,7 +143,7 @@ public class Crawler {
                         }
 
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        logger.error("Parse occur exception {}.",e.getMessage());
                     }
                 }
             });
@@ -194,6 +198,7 @@ public class Crawler {
         if(this.executorService!=null && !this.executorService.isShutdown()){
             this.executorService.shutdown();
         }
+        logger.info("Crawler stopped !");
     }
 
 }

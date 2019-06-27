@@ -5,11 +5,16 @@ import com.google.gson.Gson;
 import io.github.seevae.analyze.model.AuthorCount;
 import io.github.seevae.analyze.model.WordCount;
 import io.github.seevae.analyze.service.AnalyzeService;
+import io.github.seevae.config.ObjectFactory;
+import io.github.seevae.crawler.Crawler;
 import spark.*;
 
 import java.util.List;
 
 
+/**
+ * web API 使用的是sparkJava框架完成的 Web API的开发
+ */
 public class WebController {
 
     private final AnalyzeService analyzeService;
@@ -38,6 +43,11 @@ public class WebController {
 
         Spark.get("/analyze/author_count",((request, response) -> analyzeAuthorCount()),transformer);
         Spark.get("/analyze/word_cloud",((request, response) -> analyzeWordCloud()),transformer);
+        Spark.get("/crawler/stop",((request, response) -> {
+            Crawler crawler = ObjectFactory.getInstance().getObject(Crawler.class);
+            crawler.stop();
+            return  "爬虫停止了 !";
+        }));
     }
 
     public static class JSONResponseTransformer implements ResponseTransformer{

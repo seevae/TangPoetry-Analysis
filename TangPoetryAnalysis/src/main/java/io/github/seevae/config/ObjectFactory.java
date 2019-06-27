@@ -3,12 +3,17 @@ package io.github.seevae.config;/*
     */
 
 import com.alibaba.druid.pool.DruidDataSource;
+import io.github.seevae.analyze.dao.AnalyzeDao;
+import io.github.seevae.analyze.dao.impl.AnalyzeDaoImpl;
+import io.github.seevae.analyze.service.AnalyzeService;
+import io.github.seevae.analyze.service.impl.AnalyzeServiceImpl;
 import io.github.seevae.crawler.Crawler;
 import io.github.seevae.crawler.common.Page;
 import io.github.seevae.crawler.pipeline.ConsolePipeline;
 import io.github.seevae.crawler.pipeline.DatabasePipeline;
 import io.github.seevae.crawler.prase.DataPageParse;
 import io.github.seevae.crawler.prase.DocumentParse;
+import io.github.seevae.web.WebController;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -35,11 +40,20 @@ public class ObjectFactory {
         initCrawler();
 
         //4.Web对象
+        initWebController();
 
         //5.对象清单打印输出
         printObjectList();
 
-        
+
+    }
+
+    private void initWebController() {
+        DataSource dataSource = getObject(DataSource.class);
+        AnalyzeDao analyzeDao = new AnalyzeDaoImpl(dataSource);
+        AnalyzeService analyzeService = new AnalyzeServiceImpl(analyzeDao);
+        WebController webController = new WebController(analyzeService);
+        objectHashMap.put(WebController.class,webController);
     }
 
     private void initCrawler() {

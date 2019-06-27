@@ -12,15 +12,29 @@ import io.github.seevae.crawler.common.Page;
 import io.github.seevae.crawler.pipeline.DatabasePipeline;
 import io.github.seevae.crawler.prase.DataPageParse;
 import io.github.seevae.crawler.prase.DocumentParse;
+import io.github.seevae.web.WebController;
+import spark.Request;
+import spark.Response;
+import spark.Route;
+
 import javax.sql.DataSource;
+
+import java.time.LocalDateTime;
+
+import static spark.Spark.get;
+import static spark.route.HttpMethod.get;
 
 public class TestCrawlerMain {
 
     public static void main(String[] args) {
 
-        Crawler crawler = ObjectFactory .getInstance().getObject(Crawler.class);
-        crawler.start();
+//        Crawler crawler = ObjectFactory .getInstance().getObject(Crawler.class);
+//        crawler.start();
 
+        WebController webController = ObjectFactory.getInstance().getObject(WebController.class);
+
+        //运行web服务,提供接口
+        webController.launch();
 
     }
 }
